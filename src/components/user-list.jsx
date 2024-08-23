@@ -1,15 +1,41 @@
 import { useEffect, useState } from "react";
+import UserRow from "./user-row";
 
 const Userlist = () => {
-  const [user, setUsers] = useState();
-  const getEmployeeData = async () => {
-    const res = await fetch("");
+  const [users, setUsers] = useState();
+  const getEmployeesData = async () => {
+    const res = await fetch("http://localhost:8000/users");
     const { users } = await res.json();
     setUsers(users);
   };
+  const createEmployee = async () => {
+    const res = await fetch("http://localhost:8000/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        firstname: "Нарантунгалаг",
+        lastname: "Даваа",
+        email: "naraa@gmail.com",
+        position: "Хөгжүүлэгч",
+        profileImg: "https://img.daisyui.com/images/profile/demo/2@94.webp",
+      }),
+    });
+    const { user } = await res.json();
+    console.log("AE", user);
+  };
+
   useEffect(() => {
-    getEmployeeData();
+    getEmployeesData();
   }, []);
+  // const deleteEmployee = async () => {
+  //   const [userRow, setUserRow] = useState();
+  //   const res = await fetch("http://localhost:8000/users");
+  //   const data = await res.json();
+  //   setUserRow(null);
+  // };
+
   return (
     <div>
       <div className="overflow-x-auto">
@@ -29,58 +55,58 @@ const Userlist = () => {
             </tr>
           </thead>
           <tbody>
-            {/* row 1 */}
-            <tr>
-              <th>
-                <label>
-                  <input type="checkbox" className="checkbox" />
-                </label>
-              </th>
-              <td>
-                <div className="flex items-center gap-3">
-                  <div className="avatar">
-                    <div className="mask mask-squircle h-12 w-12">
-                      <img
-                        src="https://img.daisyui.com/images/profile/demo/2@94.webp"
-                        alt="Avatar Tailwind CSS Component"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="font-bold">Hart Hagerty</div>
-                    <div className="text-sm opacity-50">United States</div>
-                  </div>
-                </div>
-              </td>
-              <td>
-                Zemlak, Daniel and Leannon
-                <br />
-                <span className="badge badge-ghost badge-sm">
-                  Desktop Support Technician
-                </span>
-              </td>
-              <td>mail</td>
-              <th>
-                <button className="btn btn-ghost btn-xs border border-gray-400">
-                  delete
-                </button>
-                <button className="btn btn-ghost btn-xs border border-gray-400">
-                  edit
-                </button>
-              </th>
-            </tr>
+            {users?.map((user) => (
+              <UserRow user={user} />
+            ))}
           </tbody>
-          {/* foot */}
-          <tfoot>
-            {/* <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Job</th>
-              <th>Favorite Color</th>
-              <th></th>
-            </tr> */}
-          </tfoot>
         </table>
+        <div>
+          <button
+            className="btn"
+            onClick={() => {
+              document.getElementById("my_modal_1").showModal();
+            }}
+          >
+            Ажилтан нэмэх
+          </button>
+
+          <dialog id="my_modal_1" open={true} className="modal">
+            <div className="modal-box">
+              <h3 className="font-bold text-lg">Hello!</h3>
+              <p className="py-4">Ажилчид</p>
+              <div className="flex gap-4 flex-col">
+                <input
+                  type="text"
+                  placeholder="Нэр"
+                  className="input input-bordered w-full max-w-xs"
+                />
+                <input
+                  type="text"
+                  placeholder="Овог"
+                  className="input input-bordered w-full max-w-xs"
+                />
+                <input
+                  type="text"
+                  placeholder="и-мэйл"
+                  className="input input-bordered w-full max-w-xs"
+                />
+                <input
+                  type="text"
+                  placeholder="мэргэжил"
+                  className="input input-bordered w-full max-w-xs"
+                />
+              </div>
+              <div className="modal-action">
+                <form method="dialog">
+                  {/* if there is a button in form, it will close the modal */}
+                  <button className="btn" onClick={createEmployee}>
+                    Save
+                  </button>
+                </form>
+              </div>
+            </div>
+          </dialog>
+        </div>
       </div>
     </div>
   );
